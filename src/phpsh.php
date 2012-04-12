@@ -49,6 +49,7 @@ if (file_exists($___phpsh___homerc)) {
   require_once '/etc/phpsh/rc.php';
 }
 
+$___phpsh___namespace = array_key_exists('__phpsh__namespace', $GLOBALS) ? $GLOBALS['__phpsh__namespace'] : null;
 $___phpsh___do_color = true;
 $___phpsh___do_autocomplete = true;
 $___phpsh___do_undefined_function_check = true;
@@ -404,7 +405,7 @@ class ___Phpsh___ {
    * @author   dcorson
    */
   function __construct($output_from_includes='', $do_color, $do_autocomplete,
-      $do_undefined_function_check, $fork_every_command, $comm_filename) {
+      $do_undefined_function_check, $fork_every_command, $comm_filename, $namespace) {
     $this->_comm_handle = fopen($comm_filename, 'w');
     $this->__send_autocomplete_identifiers($do_autocomplete);
     $this->do_color = $do_color;
@@ -415,6 +416,7 @@ class ___Phpsh___ {
              "Install pcntl to enable forking on every command.\n");
     }
     $this->fork_every_command = $fork_every_command;
+    $this->namespace = $namespace;
 
     // now it's safe to send any output the includes generated
     echo $output_from_includes;
@@ -540,6 +542,11 @@ class ___Phpsh___ {
       $buffer_enc = fgets($this->_handle, $this->_MAX_LINE_SIZE);
       $buffer = stripcslashes($buffer_enc);
 
+      // namespace is prepended to all commands if it exists
+      if ($this->namespace !== null) {
+          $buffer = "namespace {$this->namespace};{$buffer}";
+      }
+
       $err_msg = '';
       if ($this->do_undefined_function_check) {
         $undefd_func = $this->undefined_function_check($buffer);
@@ -626,7 +633,7 @@ class ___Phpsh___ {
 $___phpsh___ = new ___Phpsh___($___phpsh___output_from_includes,
   $___phpsh___do_color, $___phpsh___do_autocomplete,
   $___phpsh___do_undefined_function_check, $___phpsh___fork_every_command,
-  $argv[1]);
+  $argv[1], $___phpsh___namespace);
 unset($___phpsh___do_color);
 unset($___phpsh___do_autocomplete);
 unset($___phpsh___do_undefined_function_check);

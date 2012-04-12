@@ -22,6 +22,7 @@ switch ($___phpsh___codebase_mode) {
 case '':
   // Put default library includes here.
   //require_once 'relative-path-from-repo-head/lib/codebase_include.php';
+  //$GLOBALS['__phpsh_namespace'] = 'YourNamespace';
   break;
 
 case 'none':
